@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>BUAA_数据库_03_逻辑模型_关系模型 | 春分</title><meta name="author" content="LXY"><meta name="copyright" content="LXY"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="03-数据模型-逻辑模型概述逻辑数据模型是对现实世界的第二层抽象。将概念数据模式 映射为数据库的逻辑结构 直接与DBMS有关，有严格的形式化定义，方便在计算机系统实现 通常有一组严格定义的无二义性语法语义的DB语言，人们可以由此定义，操纵DB中数据 三要素：  数据结构  数据操作  数据约束   关系数据结构发展历史不赘述    ER模型 关系模型    有很多概念（实体，数据，关系） 只有关系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUAA_数据库_03_逻辑模型_关系模型">
+<meta property="og:url" content="https://l-x-y06.github.io/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/">
+<meta property="og:site_name" content="春分">
+<meta property="og:description" content="03-数据模型-逻辑模型概述逻辑数据模型是对现实世界的第二层抽象。将概念数据模式 映射为数据库的逻辑结构 直接与DBMS有关，有严格的形式化定义，方便在计算机系统实现 通常有一组严格定义的无二义性语法语义的DB语言，人们可以由此定义，操纵DB中数据 三要素：  数据结构  数据操作  数据约束   关系数据结构发展历史不赘述    ER模型 关系模型    有很多概念（实体，数据，关系） 只有关系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://l-x-y06.github.io/img/tx.jpg">
+<meta property="article:published_time" content="2026-03-25T11:31:14.000Z">
+<meta property="article:modified_time" content="2026-03-25T11:33:38.373Z">
+<meta property="article:author" content="LXY">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://l-x-y06.github.io/img/tx.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "BUAA_数据库_03_逻辑模型_关系模型",
+  "url": "https://l-x-y06.github.io/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/",
+  "image": "https://l-x-y06.github.io/img/tx.jpg",
+  "datePublished": "2026-03-25T11:31:14.000Z",
+  "dateModified": "2026-03-25T11:33:38.373Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LXY",
+      "url": "https://l-x-y06.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://l-x-y06.github.io/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'undefined')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'BUAA_数据库_03_逻辑模型_关系模型',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">春分</span></a><a class="nav-page-title" href="/"><span class="site-name">BUAA_数据库_03_逻辑模型_关系模型</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">BUAA_数据库_03_逻辑模型_关系模型</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-25T11:31:14.000Z" title="发表于 2026-03-25 19:31:14">2026-03-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-25T11:33:38.373Z" title="更新于 2026-03-25 19:33:38">2026-03-25</time></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="03-数据模型-逻辑模型"><a href="#03-数据模型-逻辑模型" class="headerlink" title="03-数据模型-逻辑模型"></a>03-数据模型-逻辑模型</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>逻辑数据模型是对现实世界的第二层抽象。将<em>概念数据模式</em> 映射为<em>数据库的逻辑结构</em></p>
+<p>直接与DBMS有关，有严格的形式化定义，方便在计算机系统实现</p>
+<p>通常有一组严格定义的<strong>无二义性语法语义</strong>的DB语言，人们可以由此定义，操纵DB中数据</p>
+<p>三要素：</p>
+<ul>
+<li><p>数据结构</p>
+</li>
+<li><p>数据操作</p>
+</li>
+<li><p>数据约束</p>
+</li>
+</ul>
+<h2 id="关系数据结构"><a href="#关系数据结构" class="headerlink" title="关系数据结构"></a>关系数据结构</h2><p>发展历史不赘述</p>
+<table>
+<thead>
+<tr>
+<th>ER模型</th>
+<th>关系模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>有很多概念（实体，数据，关系）</td>
+<td>只有<strong>关系</strong>一个概念</td>
+</tr>
+<tr>
+<td>用于<strong>描述应用需求</strong></td>
+<td>用<strong>表的集合</strong>描述世界</td>
+</tr>
+<tr>
+<td>不适合在计算机实现（只有数据结构而无数据操作</td>
+<td>适合在计算机实现</td>
+</tr>
+</tbody></table>
+<p>用<strong>二维表格结构</strong>表示实体间关系</p>
+<p>关系模型是各个<em>关系的框架</em>的集合，即，关系模型是一些<strong>表格</strong>（二维）的格式，其中包括关系名、属性名、关键字等</p>
+<h5 id="关系的框架称为关系模式"><a href="#关系的框架称为关系模式" class="headerlink" title="关系的框架称为关系模式"></a>关系的框架称为<em>关系模式</em></h5><h5 id="关系的框架和符合该框架的关系值称为关系实例"><a href="#关系的框架和符合该框架的关系值称为关系实例" class="headerlink" title="关系的框架和符合该框架的关系值称为关系实例"></a>关系的框架和符合该框架的关系值称为<em>关系实例</em></h5><h3 id="一个类可以存放两类信息"><a href="#一个类可以存放两类信息" class="headerlink" title="一个类可以存放两类信息"></a>一个类可以存放两类信息</h3><ul>
+<li><p>描述实体本身的信息</p>
+</li>
+<li><p>描述实体之间的联系的信息</p>
+</li>
+</ul>
+<p>在层次模型和网状模型中，把有联系的实体用<strong>指针</strong>链接，实体之间的联系通过<strong>指针</strong>实现。</p>
+<p>关系模式采用了<strong>不同的思想</strong>，用<strong>二维表</strong>来表示实体间联系，这是关系模型的<strong>本质</strong></p>
+<p>∴ 在建立关系模型时，只要把实体及其属性用关系框架表示，同时把实体间关系用关系框架表示，就可以得到一个关系模型。（利用这个可以实现ER模型到关系模型的转化）</p>
+<h3 id="关系的定义"><a href="#关系的定义" class="headerlink" title="关系的定义"></a>关系的定义</h3><ul>
+<li><p>域，用<strong>D</strong>表示，一组具有相同数据类型值的集合，如：D &#x3D; { 男，女}</p>
+<p>包含的值个数称为域的<strong>基数</strong>（用m表示），上例中域的基数为2</p>
+<p>无序</p>
+</li>
+<li><p>笛卡尔积，就是离散数学的笛卡尔积，每一个元素称为元组（n元组），元组元素有序，元组中每一个元素叫一个分量</p>
+<p>笛卡尔积的基数为所有参与运算的域的基数之积</p>
+<p>笛卡尔积可以由二维表的形式表示，框架由域构成，每一行是一个元组，每一列来自同一域</p>
+</li>
+<li><p>关系，笛卡尔积的任意子集称为定义在域D1…..Dn上的n元关系，单元关系，二元关系，…，n元关系</p>
+<p>在实际应用中，关系是笛卡尔积中<strong>有意义</strong>的子集</p>
+<p>关系同样可以由二维表表示，域可以相同（人到人之间的朋友关系），为了加以区别，每列起一个名字，称为属性，属性的取值范围为值域</p>
+<p>具有相同关系框架的关系成为同类关系</p>
+<p>关系实际上是集合，所以不允许出现相同元素，无序，属性的顺序也无关紧要，列的顺序可以任意交换，记得把属性名一起交换（别把姓名搞成“男”了</p>
+<p>属性值来自同一域，属性名不允许重复，所有属性值是原子的，（籍贯必须拆成省市街道这种不可再分单位</p>
+</li>
+</ul>
+<h2 id="ER模型向关系模型转化"><a href="#ER模型向关系模型转化" class="headerlink" title="ER模型向关系模型转化"></a>ER模型向关系模型转化</h2><ul>
+<li><p>规则一：每个实体转换成一个关系模式</p>
+<p>实体属性即为关系属性，实体标识符即为关系模式的键</p>
+</li>
+<li><p>规则二：</p>
+<p>分为1：1，1：n，m：n分别讨论</p>
+</li>
+</ul>
+<p>Step1：</p>
+<p>    把实体转化为关系：如下</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/6e3a4c67b9d6c04020bda0cef88cc96c.png"></p>
+<p>Step2：</p>
+<p>    把m：n联系转化为关系</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/647b75e8fb272e88864fd0423489ffd0.png"></p>
+<p>联系的实体中包含：联系的实体中的键，联系自身的属性</p>
+<p>对于1：1和1：n可以向上例那样直接把联系设为一个实体</p>
+<p>更好的解法是直接把联系压入其对应的实体中</p>
+<p><strong>1：1例</strong></p>
+<p>    <img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/de5cf86a-f639-44d6-9471-068d6bac42ad.png"></p>
+<p>将任职这个联系合并到学校这个实体中（校长也可以，但实际中一般合并到常用那个实体</p>
+<p><strong>1：n例</strong></p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/2ba3736d-4ef2-4042-9bf7-9fcb62078490.png"></p>
+<p>方法已在图片中解明，但这里出现一个问题，为什么不合并到<strong>1</strong>对应的实体中呢</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/78c07e08-f48f-4e87-a755-7043d4c65059.png"></p>
+<p>这个问题在ppt中解明，<strong>系号</strong>和<strong>系名</strong>两大属性重复太多，而且<strong>系号</strong>是系这个关系的主键，重复也违反了主键约束</p>
+<p>另，三元关系转化如下</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/fc3898dc-0b1c-4b92-86f0-c4b3a4d21606.png"></p>
+<p>和二元关系差不太多吧。。</p>
+<h2 id="关系的完整性（约束）"><a href="#关系的完整性（约束）" class="headerlink" title="关系的完整性（约束）"></a>关系的完整性（约束）</h2><h3 id="域完整性"><a href="#域完整性" class="headerlink" title="域完整性"></a>域完整性</h3><ul>
+<li>属性值应符合域的取值范围，用于增强数据类型（为年龄属性设定&lt;&#x3D;150的域完整性约束，属性值是否可为空（NULL）也是一种约束</li>
+</ul>
+<h3 id="实体完整性"><a href="#实体完整性" class="headerlink" title="实体完整性"></a>实体完整性</h3><ul>
+<li><p>用<strong>主键</strong>约束</p>
+</li>
+<li><p>主属性（构成主键的属性）同时满足以下属性</p>
+<ul>
+<li><p>不能为空</p>
+</li>
+<li><p>取值唯一</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>就像以学号为主键的学生数据库，不可能有无学号的学生，也不可能有两个学号一样的学生</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/7a7dcc5e-50f2-43b4-889b-cf5c08007d10.png"></p>
+<h3 id="参照完整性"><a href="#参照完整性" class="headerlink" title="参照完整性"></a>参照完整性</h3><ul>
+<li>在关系模型中，实体与实体之间的联系都由关系描述，因此可能存在关系间引用</li>
+</ul>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/81458ca3-b4ac-4fc5-8617-7d4807c6edfe.png"></p>
+<p>                                                            不同关系间引用</p>
+<p><img src="/img/defaltload.gif" data-lazy-src="https://raw.githubusercontent.com/l-x-y06/image/master/b4a83e27-e4f6-4894-aaf2-e57db607423d.png"></p>
+<p>                                                            相同关系间引用</p>
+<p>关系模型中用外键来表示这种引用：</p>
+<p>    若F是关系R的一个或一组属性，且不是R的键，若F域关系S的主键K相对应，则称F是关系R的外键。其中，关系R被称为<strong>参照关系</strong>，S被称为<strong>被参照关系</strong>或<strong>目标关系</strong></p>
+<p><strong>参照完整性规则</strong></p>
+<ul>
+<li><p>外键的取值只有两种情况：</p>
+<ul>
+<li><p>空</p>
+</li>
+<li><p>被参照关系某个元组的主键值</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>举例如上图<em>不同关系间引用</em>。学生关系中每个元组的专业号只有两种情况</p>
+<ul>
+<li><p>空值，尚未给该学生分配专业</p>
+</li>
+<li><p>非空值，该值必须是专业关系中某个元组的“专业号”值，毕竟学生不能被分配到一个不存在的专业中</p>
+</li>
+</ul>
+<p>其他约束或规则（参照完整性：</p>
+<ul>
+<li><p>R和S可以是相同关系（如上图相同关系间引用）</p>
+</li>
+<li><p>S的主键和R的外键必须定义在同一组域上（都为学号&#x2F;专业号&#x2F;工号</p>
+</li>
+<li><p>外键可以和主键不同名，但是为了方便，一般都取一样的</p>
+</li>
+</ul>
+<h3 id="用户定义完整性"><a href="#用户定义完整性" class="headerlink" title="用户定义完整性"></a>用户定义完整性</h3><p>就是说定义数据库的人，最好把约束条件提前写好写完整，别让别的程序干这事</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://l-x-y06.github.io">LXY</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://l-x-y06.github.io/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/">https://l-x-y06.github.io/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://l-x-y06.github.io" target="_blank">春分</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></div><div class="post-share"><div class="social-share" data-image="/img/tx.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/03/21/BUAA-OS-2026-Lab0/" title="BUAA-OS-2026-Lab0"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">BUAA-OS-2026-Lab0</div></div><div class="info-2"><div class="info-item-1">思考题Thinking 0.1   创建README.txt并执行git status &gt; Untracked.txt命令如下  12git@24371255:~/learnGit $ touch README.txtgit@24371255:~/learnGit $ git status &gt; Untracked.txt  在README.txt中添加hello OS，并执行add指令，再执行git status &gt; Stage.txt   123git@24371255:~/learnGit $ echo &quot;hello OS&quot; &gt; README.txt git@24371255:~/learnGit $ git add README.txt git@24371255:~/learnGit $ git status &gt; Stage.txt  提交READ.txt文件 1234git@24371255:~/learnGit $ git commit -m 24371255[master （根提交） 2c03ad8] 24371255...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/defaltload.gif" data-lazy-src="/img/tx.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LXY</div><div class="author-info-description">往日不可追</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/l-x-y06"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/l-x-y06" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:xyli40727@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#03-%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">03-数据模型-逻辑模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">关系数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E6%A1%86%E6%9E%B6%E7%A7%B0%E4%B8%BA%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.1.</span> <span class="toc-text">关系的框架称为关系模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E6%A1%86%E6%9E%B6%E5%92%8C%E7%AC%A6%E5%90%88%E8%AF%A5%E6%A1%86%E6%9E%B6%E7%9A%84%E5%85%B3%E7%B3%BB%E5%80%BC%E7%A7%B0%E4%B8%BA%E5%85%B3%E7%B3%BB%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.2.2.</span> <span class="toc-text">关系的框架和符合该框架的关系值称为关系实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%B1%BB%E5%8F%AF%E4%BB%A5%E5%AD%98%E6%94%BE%E4%B8%A4%E7%B1%BB%E4%BF%A1%E6%81%AF"><span class="toc-number">1.2.3.</span> <span class="toc-text">一个类可以存放两类信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.4.</span> <span class="toc-text">关系的定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ER%E6%A8%A1%E5%9E%8B%E5%90%91%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E8%BD%AC%E5%8C%96"><span class="toc-number">1.3.</span> <span class="toc-text">ER模型向关系模型转化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7%EF%BC%88%E7%BA%A6%E6%9D%9F%EF%BC%89"><span class="toc-number">1.4.</span> <span class="toc-text">关系的完整性（约束）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">1.4.1.</span> <span class="toc-text">域完整性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E4%BD%93%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">1.4.2.</span> <span class="toc-text">实体完整性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E7%85%A7%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">1.4.3.</span> <span class="toc-text">参照完整性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E5%AE%9A%E4%B9%89%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="toc-number">1.4.4.</span> <span class="toc-text">用户定义完整性</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/25/BUAA-%E6%95%B0%E6%8D%AE%E5%BA%93-03-%E9%80%BB%E8%BE%91%E6%A8%A1%E5%9E%8B-%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B/" title="BUAA_数据库_03_逻辑模型_关系模型">BUAA_数据库_03_逻辑模型_关系模型</a><time datetime="2026-03-25T11:31:14.000Z" title="发表于 2026-03-25 19:31:14">2026-03-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/21/BUAA-OS-2026-Lab0/" title="BUAA-OS-2026-Lab0">BUAA-OS-2026-Lab0</a><time datetime="2026-03-21T06:30:00.000Z" title="发表于 2026-03-21 14:30:00">2026-03-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/19/hello-world/" title="Hello World">Hello World</a><time datetime="2026-03-19T02:27:25.560Z" title="发表于 2026-03-19 10:27:25">2026-03-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By LXY</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/canvas-fluttering-ribbon.min.js"></script></div></body></html>
